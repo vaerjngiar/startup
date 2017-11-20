@@ -1,7 +1,7 @@
 {
   "name": "startup",
   "version": "1.0.0",
-  "description": "a node/koa app for startups ideas",
+  "description": "a nodejs/koajs app for startups ideas",
   "main": "app",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,12 +20,9 @@
     "koa-bodyparser": "^4.2.0",
     "koa-logger": "^3.1.0",
     "koa-methodoverride": "^2.0.0",
-    "koa-override": "^3.0.0",
     "koa-router": "^7.3.0",
-    "koa-send": "^4.1.1",
     "koa-static": "^4.0.2",
     "koa-views": "^6.1.2",
-    "koamethodoverride": "^1.0.1",
     "mongoose": "^4.13.4",
     "mongoose-beautiful-unique-validation": "^7.0.0",
     "npm-check-updates": "^2.13.0",

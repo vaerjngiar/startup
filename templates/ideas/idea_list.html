@@ -8,7 +8,11 @@
                 <div class="card card-body mb-2">
                     <h4>{{idea.title}}</h4>
                     <p>{{idea.details}}</p>
-                    <a class="btn btn-dark btn-block" href="/ideas/edit/{{idea.id}}">Edit</a>
+                    <a class="btn btn-dark btn-block mb-2" href="/ideas/edit/{{idea.id}}">Edit</a>
+                    <form method="post" action="/ideas/{{idea.id}}?_method=DELETE">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="submit" class="btn btn-danger btn-block" value="Delete">
+                    </form>
                  </div>
         {% endfor %}
 

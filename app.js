@@ -41,8 +41,8 @@ router
     .get('/ideas', ideaFetch)
     .get('/ideas/edit/:id', ideaEdit)
     .put('/ideas/:id',ideaPut)
+    .del('/ideas/:id',ideaDelete)
     .post('/ideas', ideaPost);
-
 
 
 
@@ -132,19 +132,7 @@ async function ideaPost(ctx) {
 }
 
 // Edit Form process
-// router.put('/ideas/:id', async (ctx) => {
-//     await Idea.findOne({
-//         _id: ctx.params.id
-//     })
-//         .then(idea => {
-//             // new values
-//             idea.title = ctx.request.body.title;
-//             idea.details = ctx.request.body.details;
-//
-//             idea.save();
-//             ctx.redirect('/ideas');
-//         });
-// });
+
 
 async function ideaPut(ctx) {
     await Idea.findOne({
@@ -160,6 +148,13 @@ async function ideaPut(ctx) {
         });
 }
 
+async function ideaDelete(ctx) {
+    await Idea.remove({_id: ctx.params.id})
+        .then(() => {
+            //ctx.flash('success_msg', 'Video idea removed');
+            ctx.redirect('/ideas');
+        });
+}
 
 
 
