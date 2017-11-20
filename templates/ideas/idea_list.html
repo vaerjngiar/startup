@@ -1,0 +1,20 @@
+{% extends '../base.html' %}
+
+
+{% block content %}
+    {% if ideas %}
+
+        {% for idea in ideas %}
+                <div class="card card-body mb-2">
+                    <h4>{{idea.title}}</h4>
+                    <p>{{idea.details}}</p>
+                    <a class="btn btn-dark btn-block" href="/ideas/edit/{{idea.id}}">Edit</a>
+                 </div>
+        {% endfor %}
+
+        {% else %}
+        <p>No video ideas listed</p>
+      {% endif %}
+
+{% endblock %}
+

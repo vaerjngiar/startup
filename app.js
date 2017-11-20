@@ -3,21 +3,13 @@ const logger = require('koa-logger');
 const router = require('koa-router')();
 const koaBody = require('koa-body');
 const serve = require('koa-static');
-const mongoose = require('mongoose');
+const mongoose = require('./lib/mongoose');
 
 
 
 const Koa = require('koa');
 const app = module.exports = new Koa();
 
-// Map global promise - get rid of warning
-mongoose.Promise = global.Promise;
-// Connect to mongoose
-mongoose.connect('mongodb://localhost/startup-dev', {
-    useMongoClient: true
-})
-    .then(() => console.log('MongoDB Connected...'))
-    .catch(err => console.log(err));
 
 // Load Idea Model
 require('./models/Idea');
@@ -26,8 +18,9 @@ const Idea = mongoose.model('ideas');
 //manage static file
 app.use(serve('./public'));
 
+const methodOverride = require('koa-methodoverride');
 
-
+app.use(methodOverride('_method'));
 
 // middleware
 
@@ -42,9 +35,15 @@ router
     .get('/', home)
     .get('/about', about);
 
+
 router
     .get('/ideas/add', ideaAdd)
+    .get('/ideas', ideaFetch)
+    .get('/ideas/edit/:id', ideaEdit)
+    .put('/ideas/:id',ideaPut)
     .post('/ideas', ideaPost);
+
+
 
 
 
@@ -61,9 +60,33 @@ async function about(ctx) {
     await ctx.render('about');
 }
 
-async function ideaAdd(ctx) {
-    await ctx.render('ideas/add');
+async function ideaFetch(ctx) {
+
+    await Idea.find({})
+        .sort({date:'desc'})
+        .then(ideas => {
+            return ctx.render('ideas/idea_list', {
+                ideas:ideas
+            });
+        });
 }
+
+async function ideaEdit(ctx) {
+    await Idea.findOne({
+        _id: ctx.params.id
+    })
+        .then(idea => {
+            return ctx.render('ideas/idea_edit', {
+                idea:idea
+            });
+        });
+}
+
+async function ideaAdd(ctx) {
+    await ctx.render('ideas/idea_add');
+}
+
+
 
 async function ideaPost(ctx) {
 
@@ -87,7 +110,7 @@ async function ideaPost(ctx) {
         let title = ctx.request.body.title;
         let details = ctx.request.body.details;
 
-        await ctx.render('ideas/add', {
+        await ctx.render('ideas/idea_add', {
             errors: errors,
             title: title,
             details: details
@@ -95,8 +118,46 @@ async function ideaPost(ctx) {
 
     } else {
 
-        ctx.body= 'Passed';
+        const newUser = {
+            title: ctx.request.body.title,
+            details: ctx.request.body.details
+        };
+
+        await new Idea(newUser)
+            .save()
+            .then( idea => {
+                return ctx.redirect('/ideas');
+            })
     }
+}
+
+// Edit Form process
+// router.put('/ideas/:id', async (ctx) => {
+//     await Idea.findOne({
+//         _id: ctx.params.id
+//     })
+//         .then(idea => {
+//             // new values
+//             idea.title = ctx.request.body.title;
+//             idea.details = ctx.request.body.details;
+//
+//             idea.save();
+//             ctx.redirect('/ideas');
+//         });
+// });
+
+async function ideaPut(ctx) {
+    await Idea.findOne({
+        _id: ctx.params.id
+    })
+        .then(idea => {
+            // new values
+            idea.title = ctx.request.body.title;
+            idea.details = ctx.request.body.details;
+
+            idea.save();
+            ctx.redirect('/ideas');
+        });
 }
 
 
