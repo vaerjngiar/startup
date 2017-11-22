@@ -55,6 +55,11 @@ router.put('/ideas/:id', ideas.ideaPut);
 router.del('/ideas/:id', ideas.ideaDelete);
 router.post('/ideas', ideas.ideaPost);
 
+router.get('/users/login', users.login);
+router.get('/users/register', users.register);
+router.post('/users/register', users.userPost);
+
+
 
 //server
 app.use(router.routes());
