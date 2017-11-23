@@ -2,6 +2,7 @@ const Koa = require('koa');
 const router = require('koa-router')();
 const mongoose = require('../lib/mongoose');
 const bcrypt = require('bcryptjs');
+const passport = require('koa-passport');
 
 // Load Idea Model
 require('../models/User');
@@ -14,6 +15,22 @@ exports.register = async function (ctx) {
 
 exports.login = async function (ctx) {
     await ctx.render('users/login');
+};
+exports.logout = async function (ctx) {
+    ctx.logout();
+    ctx.flash('success_msg', 'You are logged out');
+    ctx.redirect('/users/login');
+};
+
+
+
+exports.loginPost = async function (ctx, next) {
+    await passport.authenticate('local', {
+        successRedirect: '/ideas',
+        failureRedirect: '/users/login',
+        failureFlash: true
+
+    })(ctx, next);
 };
 
 

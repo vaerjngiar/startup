@@ -4,9 +4,11 @@ const router = require('koa-router')();
 const koaBody = require('koa-body');
 const serve = require('koa-static');
 const mongoose = require('./lib/mongoose');
+const passport = require('koa-passport');
 
 const session = require('koa-generic-session');
-//const flash = require('koa-connect-flash');
+const flash = require('koa-connect-flash');
+//const flash = require('connect-flash');
 
 const path = require('path');
 const fs = require('fs');
@@ -30,7 +32,12 @@ app.use(methodOverride('_method'));
 app.keys = ['secret'];
 app.use(session());
 
-//app.use(flash());
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(flash());
 
 // middleware
 
@@ -44,6 +51,8 @@ app.use(koaBody());
 const ideas = require('./routes/ideas');
 const users = require('./routes/users');
 
+// Passport Config
+require('./config/passport')(passport);
 
 router.get('/', require('./routes/home').get);
 router.get('/about', require('./routes/about').get);
@@ -56,8 +65,10 @@ router.del('/ideas/:id', ideas.ideaDelete);
 router.post('/ideas', ideas.ideaPost);
 
 router.get('/users/login', users.login);
+router.post('/users/login', users.loginPost);
 router.get('/users/register', users.register);
 router.post('/users/register', users.userPost);
+router.get('/users/logout', users.logout);
 
 
 
