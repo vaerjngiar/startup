@@ -1,4 +1,5 @@
 const render = require('./lib/render');
+const {ensureAuthenticated} = require('./helpers/auth');
 const logger = require('koa-logger');
 const router = require('koa-router')();
 const koaBody = require('koa-body');
@@ -57,12 +58,12 @@ require('./config/passport')(passport);
 router.get('/', require('./routes/home').get);
 router.get('/about', require('./routes/about').get);
 
-router.get('/ideas', ideas.ideaFetch);
-router.get('/ideas/add', ideas.ideaAdd);
-router.get('/ideas/edit/:id', ideas.ideaEdit);
-router.put('/ideas/:id', ideas.ideaPut);
-router.del('/ideas/:id', ideas.ideaDelete);
-router.post('/ideas', ideas.ideaPost);
+router.get('/ideas', ensureAuthenticated, ideas.ideaFetch);
+router.get('/ideas/add', ensureAuthenticated, ideas.ideaAdd);
+router.get('/ideas/edit/:id', ensureAuthenticated, ideas.ideaEdit);
+router.put('/ideas/:id', ensureAuthenticated, ideas.ideaPut);
+router.del('/ideas/:id', ensureAuthenticated, ideas.ideaDelete);
+router.post('/ideas', ensureAuthenticated, ideas.ideaPost);
 
 router.get('/users/login', users.login);
 router.post('/users/login', users.loginPost);

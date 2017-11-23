@@ -10,6 +10,7 @@ const Idea = mongoose.model('ideas');
 
 
 
+
 exports.ideaFetch = async function(ctx, next) {
     await Idea.find({})
         .sort({date:'desc'})
