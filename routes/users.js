@@ -4,7 +4,7 @@ const mongoose = require('../lib/mongoose');
 const bcrypt = require('bcryptjs');
 const passport = require('koa-passport');
 
-// Load Idea Model
+// Load User Model
 require('../models/User');
 const User = mongoose.model('users');
 

@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const router = require('koa-router')();
 const mongoose = require('../lib/mongoose');
+const {ensureAuthenticated} = require('../helpers/auth');
 
 
 
@@ -8,11 +9,8 @@ const mongoose = require('../lib/mongoose');
 require('../models/Idea');
 const Idea = mongoose.model('ideas');
 
-
-
-
 exports.ideaFetch = async function(ctx, next) {
-    await Idea.find({})
+    await Idea.find({user: ctx.req.user.id})
         .sort({date:'desc'})
         .then(ideas => {
             return ctx.render('ideas/idea_list', {
@@ -31,9 +29,18 @@ exports.ideaEdit = async function(ctx, next) {
         _id: ctx.params.id
     })
         .then(idea => {
-            return ctx.render('ideas/idea_edit', {
-                idea:idea
-            });
+            // return ctx.render('ideas/idea_edit', {
+            //     idea:idea
+            // });
+
+            if(idea.user != ctx.req.user.id){
+                ctx.flash('error_msg', 'Not Authorized');
+                return ctx.redirect('/ideas');
+            } else {
+                return ctx.render('ideas/idea_edit', {
+                    idea:idea
+                });
+            }
         });
 };
 
@@ -90,12 +97,15 @@ exports.ideaPost = async function(ctx, next) {
 
         const newUser = {
             title: ctx.request.body.title,
-            details: ctx.request.body.details
+            details: ctx.request.body.details,
+            user: ctx.req.user.id
+
         };
 
         await new Idea(newUser)
             .save()
             .then( idea => {
+                ctx.flash('success_msg', 'Video idea added');
                 return ctx.redirect('/ideas');
             })
     }
